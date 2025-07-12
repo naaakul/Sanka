@@ -1,18 +1,14 @@
-import AuthModal from "@/components/auth-modal";
 import React from "react";
 import Navbar from "@/components/session/Navbar";
-import Hero from "@/components/session/Hero";
+import Background from "@/components/ui/background";
+import Builder from "@/components/ui/builder";
 
 const page = () => {
   return (
-    <div className="min-h-screen w-full">
-      <Navbar/>
-      <Hero/>
-      {/* <AuthModal
-        trigger={
-          <button className="py-2 px-5 rounded-xl cursor-pointer bg-neutral-800">Login</button>
-        }
-      /> */}
+    <div className="relative min-h-screen flex items-center justify-center w-full bg-black overflow-hidden">
+      <Background/>
+      {/* <Navbar /> */}
+      <Builder/>
     </div>
   );
 };

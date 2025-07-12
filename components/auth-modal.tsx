@@ -92,35 +92,6 @@ export default function AuthModal({ trigger }: AuthModalProps) {
               </>
             )}
           </button>
-
-          {/* <Button
-            size="lg"
-            className={cn("w-full gap-2")}
-            disabled={loading !== null}
-            onClick={() => handleOAuth("google")}
-          >
-            {loading === "google" ? (
-              <Loader2 className="animate-spin" size={18} />
-            ) : (
-              <GoogleIcon />
-            )}
-            Sign in with Google
-          </Button>
-
-          <Button
-            size="lg"
-            variant="outline"
-            className={cn("w-full gap-2")}
-            disabled={loading !== null}
-            onClick={() => handleOAuth("github")}
-          >
-            {loading === "github" ? (
-              <Loader2 className="animate-spin" size={18} />
-            ) : (
-              <Github size={18} />
-            )}
-            Sign in with GitHub
-          </Button> */}
         </div>
       </DialogContent>
     </Dialog>

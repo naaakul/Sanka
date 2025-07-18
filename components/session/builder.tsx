@@ -21,11 +21,11 @@ const Builder = () => {
       </div>
 
       {/* Search Input */}
-      <div className="w-full max-w-xs sm:max-w-md md:max-w-lg xl:max-w-3xl z-30 h-10 sm:h-12 bg-[#0A0A0A] rounded-full border border-[#292929] flex items-center">
+      <div className="w-full max-w-xs sm:max-w-md md:max-w-lg xl:max-w-3xl z-30 h-10 sm:h-12 bg-background rounded-full border border-[#292929] flex items-center">
         <input
           type="text"
           placeholder="What's on your mind, maker?"
-          className="flex-1 h-full rounded-full outline-0 caret-neutral-400 border-0 px-3 sm:px-4 bg-transparent text-white text-sm sm:text-base placeholder:text-neutral-500 placeholder:text-sm sm:placeholder:text-base"
+          className="flex-1 h-full rounded-full outline-0 caret-neutral-400 border-0 px-3 sm:px-4 bg-transparent text-foreground text-sm sm:text-base placeholder:text-neutral-500 placeholder:text-sm sm:placeholder:text-base"
         />
         <div className="p-1 h-full">
           <button className="h-full aspect-square bg-neutral-400 rounded-full shrink-0 flex items-center justify-center hover:bg-neutral-300 transition-colors duration-200 active:scale-95">

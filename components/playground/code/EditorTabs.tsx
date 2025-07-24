@@ -18,7 +18,7 @@ export const EditorBreadcrumb: React.FC<EditorBreadcrumbProps> = ({
   const parts = path.split('/').filter(part => part.trim() !== '');
 
   return (
-    <Breadcrumb className="border-b border-neutral-800 overflow-x-auto p-2">
+    <Breadcrumb className="border-b border-neutral-900 overflow-x-auto p-2">
       <BreadcrumbList>
         {parts.map((part, index) => (
           <React.Fragment key={index}>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { DownloadIcon } from "lucide-react";
 import PreviewPane from "./PreviewPane";
-import { VSCodeInterface } from "./CodeInterface";
+import { CodeInterface } from "./CodeInterface";
 import { motion } from "framer-motion";
 
 const categories = {
@@ -120,8 +120,8 @@ const NextIDEInterface: React.FC = () => {
   // };
 
   return (
-    <div className="h-screen bg-[#1e1e1e] text-white flex flex-col">
-      <div className="bg-[#0F0F10] border-b border-[#1A1A1A] px-4 py-2 flex items-center justify-between">
+    <div className="h-screen bg-[#1e1e1e] text-white flex flex-col rounded-lg border border-neutral-800 overflow-hidden">
+      <div className="bg-[#0F0F10] border-b border-neutral-900 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center justify-between p-1 rounded-xl relative  backdrop-blur-md w-fit">
           {Object.entries(categories).map(([key, { label }]) => (
             <div
@@ -159,7 +159,7 @@ const NextIDEInterface: React.FC = () => {
 
       <div className="flex-1 overflow-hidden">
         {viewMode === "ide" ? (
-          <VSCodeInterface />
+          <CodeInterface />
         ) : (
           <PreviewPane code={currentCode} fileName={"page.tsx"} />
         )}

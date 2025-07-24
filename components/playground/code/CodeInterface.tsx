@@ -10,7 +10,7 @@ interface OpenFile {
   isDirty: boolean;
 }
 
-export const VSCodeInterface: React.FC = () => {
+export const CodeInterface: React.FC = () => {
   const [currentFile, setCurrentFile] = useState<OpenFile | null>(null);
 
   const handleFileSelect = (path: string, content: string) => {
@@ -105,7 +105,7 @@ export default function RootLayout({
             ) : (
               <div className="h-full bg-neutral-950 flex items-center justify-center">
                 <div className="text-center text-neutral-700">
-                  <h2 className="text-2xl mb-4">Welcome to CODE-SHAKE</h2>
+                  <h2 className="text-2xl mb-4">Welcome to SANKA</h2>
                   <p>Select a file from the explorer to start editing</p>
                 </div>
               </div>

@@ -249,7 +249,7 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedFile }
   };
 
   return (
-    <div className="w-80 bg-neutral-950 border-r border-neutral-800 h-full overflow-y-auto">
+    <div className="w-80 bg-neutral-950 border-r border-neutral-900 h-full overflow-y-auto">
       <div className="py-2">
         {fileStructure.map(node => renderNode(node))}
       </div>

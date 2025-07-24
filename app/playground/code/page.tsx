@@ -6,17 +6,17 @@ import React from "react";
 
 const page = () => {
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       <PlaygroundNavbar />
 
       <PlaygroundPanels
         leftPanel={
-          <div className="h-full pl-2 pb-2">
+          <div className="pl-2 pb-2">
             <Chat />
           </div>
         }
         rightPanel={
-          <div className="h-full pr-2 pb-2">
+          <div className="pr-2 pb-2">
             <NextIDEInterface />
           </div>
         }

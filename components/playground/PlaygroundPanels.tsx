@@ -69,9 +69,9 @@ export function PlaygroundPanels({
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
   return (
-    <div ref={containerRef} className={cn("flex h-full", className)}>
+    <div ref={containerRef} className={cn("flex", className)}>
       {/* Left Panel */}
-      <div className="overflow-hidden" style={{ width: `${leftWidth}%` }}>
+      <div className="overflow-hidden h-full" style={{ width: `${leftWidth}%` }}>
         {leftPanel}
       </div>
 
@@ -85,7 +85,7 @@ export function PlaygroundPanels({
 
       {/* Right Panel */}
       <div
-        className="overflow-hidden flex-1"
+        className="overflow-hidden flex-1 h-full"
         style={{ width: `${100 - leftWidth}%` }}
       >
         {rightPanel}

@@ -6,7 +6,7 @@ import { ThemeProvider } from "../components/ui/theme-provider";
 
 const jost = Jost({
   subsets: ["latin"],
-  weight: "800", // ExtraBold
+  weight: "800", 
   style: "italic",
   variable: "--font-jost",
 });
@@ -38,7 +38,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
         >
           {children}
         </ThemeProvider>

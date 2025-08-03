@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, ArrowUp } from "lucide-react";
+import { ChatMessage } from "../ui/ChatMessage";
 
 interface Message {
   id: string;
@@ -125,29 +126,30 @@ const Chat = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="border border-gray-200 relative rounded-[16px] bg-gray-200 text-black max-w-[80%] px-3 py-1.5 transition-colors min-w-0 break-words">
-                    <svg
-                      width="16"
-                      height="16"
-                      className="absolute -top-[6px] right-0 transition-transform"
-                    >
-                      <path
-                        d="M-2.70729e-07 6.19355C8 6.19355 12 4.12903 16 6.99382e-07C16 6.70968 16 13.5 10 16L-2.70729e-07 6.19355Z"
-                        fill="#E5E7EB"
-                      ></path>
-                    </svg>
-                    <div className="prose prose-sm prose-gray min-w-0 break-words w-full">
-                      <p className="text-sm whitespace-pre-wrap">
-                        {message.content}
-                      </p>
-                      <p className="text-xs opacity-70 mt-1">
-                        {message.timestamp.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  </div>
+                  <ChatMessage avatarUrl="https://avatars.githubusercontent.com/u/178046049?s=200&v=4" message="sergrdhdfh" side="right"/>
+                  // <div className="border border-gray-200 relative rounded-[16px] bg-gray-200 text-black max-w-[80%] px-3 py-1.5 transition-colors min-w-0 break-words">
+                  //   <svg
+                  //     width="16"
+                  //     height="16"
+                  //     className="absolute -top-[6px] right-0 transition-transform"
+                  //   >
+                  //     <path
+                  //       d="M-2.70729e-07 6.19355C8 6.19355 12 4.12903 16 6.99382e-07C16 6.70968 16 13.5 10 16L-2.70729e-07 6.19355Z"
+                  //       fill="#E5E7EB"
+                  //     ></path>
+                  //   </svg>
+                  //   <div className="prose prose-sm prose-gray min-w-0 break-words w-full">
+                  //     <p className="text-sm whitespace-pre-wrap">
+                  //       {message.content}
+                  //     </p>
+                  //     <p className="text-xs opacity-70 mt-1">
+                  //       {message.timestamp.toLocaleTimeString([], {
+                  //         hour: "2-digit",
+                  //         minute: "2-digit",
+                  //       })}
+                  //     </p>
+                  //   </div>
+                  // </div>
                 )}
               </div>
             ))}

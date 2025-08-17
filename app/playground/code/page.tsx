@@ -2,9 +2,8 @@ import Chat from "@/components/playground/Chat";
 import NextIDEInterface from "@/components/playground/code/CodePreviewEnvironment";
 import PlaygroundNavbar from "@/components/playground/PlaygroundNavbar";
 import { PlaygroundPanels } from "@/components/playground/PlaygroundPanels";
-import React from "react";
 
-const page = () => {
+const Page = ({ params }: { params: { category: string } }) => {
   return (
     <div className="h-screen flex flex-col">
       <PlaygroundNavbar />
@@ -12,7 +11,7 @@ const page = () => {
       <PlaygroundPanels
         leftPanel={
           <div className="pl-2 pb-2">
-            <Chat />
+            <Chat category={params.category} />
           </div>
         }
         rightPanel={
@@ -28,4 +27,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

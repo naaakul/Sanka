@@ -3,15 +3,23 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowUp } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const categories = {
-  Agent: { label: "AI Agent" },
-  Code: { label: "Code" },
-  Video: { label: "Video" },
+  agent: { label: "AI Agent" },
+  code: { label: "Code" },
+  video: { label: "Video" },
 }
 
 const Builder = () => {
-  const [activeCategory, setActiveCategory] = useState<keyof typeof categories>("Agent")
+  const [activeCategory, setActiveCategory] = useState<keyof typeof categories>("code")
+  const [input, setInput] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = () => {
+    if (!input.trim()) return;
+    router.push(`/playground/${activeCategory}?q=${encodeURIComponent(input)}`);
+  };
 
   return (
     <div className="w-full z-20 flex flex-col items-center relative justify-center gap-3 sm:gap-4">
@@ -23,15 +31,26 @@ const Builder = () => {
       {/* Search Input */}
       <div className="w-full max-w-xs sm:max-w-md md:max-w-lg xl:max-w-3xl z-30 h-10 sm:h-12 bg-background rounded-full border border-[#292929] flex items-center">
         <input
-          type="text"
-          placeholder="What's on your mind, maker?"
-          className="flex-1 h-full rounded-full outline-0 caret-neutral-400 border-0 px-3 sm:px-4 bg-transparent text-foreground text-sm sm:text-base placeholder:text-neutral-500 placeholder:text-sm sm:placeholder:text-base"
-        />
-        <div className="p-1 h-full">
-          <button className="h-full aspect-square bg-neutral-400 rounded-full shrink-0 flex items-center justify-center hover:bg-neutral-300 transition-colors duration-200 active:scale-95">
-            <ArrowUp className="text-black w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </div>
+        type="text"
+        placeholder="What's on your mind, maker?"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
+        className="flex-1 h-full rounded-full outline-0 caret-neutral-400 border-0 px-3 sm:px-4 bg-transparent text-foreground text-sm sm:text-base placeholder:text-neutral-500 placeholder:text-sm sm:placeholder:text-base"
+      />
+      <div className="p-1 h-full">
+        <button
+          onClick={handleSubmit}
+          className="h-full aspect-square bg-neutral-400 rounded-full shrink-0 flex items-center justify-center hover:bg-neutral-300 transition-colors duration-200 active:scale-95"
+        >
+          <ArrowUp className="text-black w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+      </div>
       </div>
 
       {/* Category Selector */}

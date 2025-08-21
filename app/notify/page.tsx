@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -105,9 +107,9 @@ export default function Notify() {
             />
             <button
               type="submit"
-              className="px-4 py-2 w-44 rounded-full bg-[#7768AD] hover:bg-[#32273C] cursor-pointer transition text-white font-medium"
+              className="px-4 py-2 w-44 rounded-full flex justify-center bg-[#7768AD] hover:bg-[#32273C] cursor-pointer transition text-white font-medium"
             >
-              Notify Me
+              {loading ? <Loader2 className="animate-spin"/> : "Notify Me"}
             </button>
           </form>
         )}

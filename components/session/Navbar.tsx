@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import AuthModal from "./auth-modal";
 import Image from "next/image";
 import Link from "next/link";
 import { createAuthClient } from "better-auth/react";
@@ -51,7 +50,6 @@ export default function Navbar() {
         </div>
 
         <div className="flex gap-4">
-
           <div className="hidden lg:block">
             {isPending ? (
               <div className="py-2 px-4 xl:px-5 rounded-full border border-neutral-600">
@@ -113,16 +111,14 @@ export default function Navbar() {
                   HEY, {session.user.name.split(" ")[0].toUpperCase()}
                 </button>
               ) : (
-                <AuthModal
-                  trigger={
-                    <button
-                      className="w-full py-3 px-4 rounded-full border border-neutral-600 cursor-pointer hover:border-neutral-400 transition-colors duration-200"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      LOGIN
-                    </button>
-                  }
-                />
+                <Link href={"/auth/sign-in"}>
+                  <button
+                    className="w-full py-3 px-4 rounded-full border border-neutral-600 cursor-pointer hover:border-neutral-400 transition-colors duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    LOGIN
+                  </button>
+                </Link>
               )}
             </div>
           </div>

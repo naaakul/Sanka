@@ -8,7 +8,7 @@ export interface CodeConfig {
 }
 
 export interface BotMessage {
-  messages: string[];
+  messages: string;
   code?: CodeFile[];
 }
 

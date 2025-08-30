@@ -11,7 +11,10 @@ export async function POST(req: NextRequest) {
     const { prompt } = await req.json();
 
     if (!prompt || typeof prompt !== "string") {
-      return NextResponse.json({ error: "Missing or invalid prompt" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing or invalid prompt" },
+        { status: 400 }
+      );
     }
 
     const chatCompletion = await groq.chat.completions.create({
@@ -37,7 +40,10 @@ export async function POST(req: NextRequest) {
     }
 
     const config = JSON.parse(match[0]);
-    return NextResponse.json(config);
+    return NextResponse.json({
+      files: config,
+      botMessages: "here is your code",
+    });
   } catch (err) {
     console.error("Error in /api/generate:", err);
     return NextResponse.json({ error: "Failed to generate" }, { status: 500 });

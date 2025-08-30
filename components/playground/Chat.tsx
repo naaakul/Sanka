@@ -1,55 +1,60 @@
-"use client";
+"use client"
 
-import React, { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ChatSession } from "@/lib/types/codeChat.types"; // adjust import if needed
 
-type Msg = { chat: string; replay: string };
+interface ChatProps {
+  chatSession: ChatSession;
+  setPrompt: React.Dispatch<React.SetStateAction<string | null>>;
+}
 
-const Messages: Msg[] = [
-  { chat: "create an todo app", replay: "here is an code" },
-  { chat: "make it a dark theme", replay: "here is your dark theam" },
-  { chat: "increase white space", replay: "" }
-];
-
-export default function Chat() {
-  const [messages, setMessages] = useState<Msg[]>(Messages);
+export default function Chat({ chatSession, setPrompt }: ChatProps) {
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // auto-scroll to bottom whenever messages change
     const el = scrollRef.current;
     if (!el) return;
     el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [messages]);
+  }, [chatSession]);
 
   function handleSend() {
     if (!input.trim()) return;
-    setMessages((m) => [...m, { chat: input.trim(), replay: "" }]);
+    setPrompt(input.trim());
     setInput("");
   }
 
   return (
     <div className="h-screen bg-[#0a0a0a] text-white flex flex-col rounded-lg border border-neutral-800 overflow-hidden">
-      <div className="relative flex-1 overflow-y-auto" id="scroll-container" ref={scrollRef}>
+      <div
+        className="relative flex-1 overflow-y-auto"
+        id="scroll-container"
+        ref={scrollRef}
+      >
         <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-[#0a0a0a] to-transparent pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none" />
 
         <div className="px-4 py-4 space-y-6 max-w-3xl mx-auto">
-          {messages.map((m, i) => (
+          {chatSession.turns.map((turn, i) => (
             <div key={i} className="space-y-3">
-              {/*right*/}
+              {/* user bubble */}
               <div className="flex justify-end">
                 <div className="flex items-center gap-2">
                   <div className="relative bg-neutral-800 px-3 py-2 rounded-2xl max-w-[80%] text-sm">
-                    {m.chat}
-                    <svg width="16" height="16" className="absolute -top-[6px] right-0 text-neutral-800" fill="currentColor">
+                    {turn.user.join(" ")}
+                    <svg
+                      width="16"
+                      height="16"
+                      className="absolute -top-[6px] right-0 text-neutral-800"
+                      fill="currentColor"
+                    >
                       <path d="M0 6.19355C8 6.19355 12 4.12903 16 0C16 6.70968 16 13.5 10 16L0 6.19355Z"></path>
                     </svg>
                   </div>
                 </div>
               </div>
 
-              {/*left*/}
+              {/* bot bubble */}
               <div className="flex justify-start">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full overflow-hidden flex justify-center items-center bg-neutral-600 p-0.5 text-xs">
@@ -57,20 +62,36 @@ export default function Chat() {
                   </div>
 
                   <div className="relative bg-neutral-900 px-3 py-2 rounded-2xl max-w-[80%] text-sm">
-                    {m.replay !== "" ? (
-                      m.replay
+                    {turn.bot.messages !== "" ? (
+                      turn.bot.messages
                     ) : (
                       <div className="flex items-center gap-2">
                         <span className="sr-only">Thinking</span>
                         <div className="flex gap-1 items-center">
-                          <span className="w-2 h-2 rounded-full animate-bounce" style={{ animationDelay: "0s" }} />
-                          <span className="w-2 h-2 rounded-full animate-bounce" style={{ animationDelay: "0.12s" }} />
-                          <span className="w-2 h-2 rounded-full animate-bounce" style={{ animationDelay: "0.24s" }} />
+                          <span
+                            className="w-2 h-2 rounded-full animate-bounce"
+                            style={{ animationDelay: "0s" }}
+                          />
+                          <span
+                            className="w-2 h-2 rounded-full animate-bounce"
+                            style={{ animationDelay: "0.12s" }}
+                          />
+                          <span
+                            className="w-2 h-2 rounded-full animate-bounce"
+                            style={{ animationDelay: "0.24s" }}
+                          />
                         </div>
-                        <span className="text-neutral-500 ml-3 text-xs">Thinking…</span>
+                        <span className="text-neutral-500 ml-3 text-xs">
+                          Thinking…
+                        </span>
                       </div>
                     )}
-                    <svg width="16" height="16" className="absolute -top-[6px] left-0 text-neutral-900" fill="currentColor">
+                    <svg
+                      width="16"
+                      height="16"
+                      className="absolute -top-[6px] left-0 text-neutral-900"
+                      fill="currentColor"
+                    >
                       <path d="M16 6.19355C8 6.19355 4 4.12903 0 0C0 6.70968 0 13.5 6 16L16 6.19355Z"></path>
                     </svg>
                   </div>
@@ -81,6 +102,7 @@ export default function Chat() {
         </div>
       </div>
 
+      {/* input */}
       <div className="border-t border-neutral-800 p-3 flex items-center gap-2">
         <textarea
           rows={1}
@@ -97,111 +119,31 @@ export default function Chat() {
         </button>
       </div>
 
-      {/* anime */}
+      {/* bouncing dots */}
       <style jsx>{`
         .animate-bounce {
           display: inline-block;
-          background: #9ca3af; /* neutral-400 look */
+          background: #9ca3af;
           width: 0.5rem;
           height: 0.5rem;
           border-radius: 9999px;
           animation: chat-bounce 0.6s infinite ease-in-out;
         }
         @keyframes chat-bounce {
-          0% { transform: translateY(0); opacity: 0.5; }
-          50% { transform: translateY(-6px); opacity: 1; }
-          100% { transform: translateY(0); opacity: 0.5; }
+          0% {
+            transform: translateY(0);
+            opacity: 0.5;
+          }
+          50% {
+            transform: translateY(-6px);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 0.5;
+          }
         }
       `}</style>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState } from "react";
-// import Image from "next/image";
-
-// const Chat = ({ initialMessage }: { initialMessage: string }) => {
-//   const [input, setInput] = useState("");
-
-//   return (
-//     <div className="h-screen bg-[#0a0a0a] text-white flex flex-col rounded-lg border border-neutral-800 overflow-hidden">
-//       <div className="relative flex-1 overflow-y-auto" id="scroll-container">
-//         <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-[#0a0a0a] to-transparent pointer-events-none"></div>
-//         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none"></div>
-
-//         <div className="px-4 py-4 space-y-6 max-w-3xl mx-auto">
-//           {initialMessage && (
-//             <div className="flex flex-col items-end group">
-//               <div className="flex items-center gap-2 mb-1">
-//                 <span className="w-6 h-6 bg-white rounded-full overflow-hidden">
-//                   {/* <img
-//                     src="https://vercel.com/api/www/avatar/e51bb2f302e32e0f30bf0e7316211783274e8ce0"
-//                     className="w-full h-full object-cover"
-//                     alt="User"
-//                   /> */}
-//                 </span>
-//               </div>
-//               <div className="relative bg-neutral-800 px-3 py-2 rounded-2xl max-w-[80%] text-sm">
-//                 {initialMessage}
-//                 <svg
-//             width="16"
-//             height="16"
-//             className="absolute -top-[6px] right-0 text-neutral-800"
-//             fill="currentColor"
-//           >
-//             <path d="M0 6.19355C8 6.19355 12 4.12903 16 0C16 6.70968 16 13.5 10 16L0 6.19355Z"></path>
-//           </svg>
-//               </div>
-//             </div>
-//           )}
-
-//           <div className="flex flex-col items-start group">
-//             <div className="flex items-center gap-2 mb-1">
-//               <span className="w-6 h-6 rounded-full overflow-hidden flex justify-center items-center bg-neutral-600 p-0.5">
-//                 <Image alt="" height={100} width={100} src={"/logo.svg"} />
-//               </span>
-//             </div>
-//             <div className="relative bg-neutral-900  px-3 py-2 rounded-2xl max-w-[80%] text-sm">
-//               Let me read the content of your text attachment to understand…
-//               <svg
-//             width="16"
-//             height="16"
-//             className="absolute -top-[6px] left-0 text-neutral-900"
-//             fill="currentColor"
-//           >
-//             <path d="M16 6.19355C8 6.19355 4 4.12903 0 0C0 6.70968 0 13.5 6 16L16 6.19355Z"></path>
-//           </svg>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="border-t border-neutral-800 p-3 flex items-center gap-2">
-//         <textarea
-//           rows={1}
-//           placeholder="Type a message..."
-//           value={input}
-//           onChange={(e) => setInput(e.target.value)}
-//           className="flex-1 resize-none bg-transparent outline-none text-sm placeholder-neutral-500"
-//         />
-//         <button className="px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-xl text-sm hover:bg-neutral-700 transition">
-//           Send
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Chat;

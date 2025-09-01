@@ -127,53 +127,60 @@ import { ChatSession, CodeConfig, CodeFile } from "@/lib/types/codeChat.types";
 
 const Page = () => {
   const [chatSession, setChatSession] = useState<ChatSession>();
-  const [config, setConfig] = useState<CodeConfig>();
+  const [config, setConfig] = useState<CodeConfig | null>(null);
   const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState<string | null>(searchParams.get("q"));
 
   useEffect(() => {
-  if (!prompt) return;
+    if (!prompt) return;
 
-  const generateCode = async () => {
-    try {
-      const res = await fetch("/api/generate/code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
+    const generateCode = async () => {
+      try {
+        const res = await fetch("/api/generate/code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        });
 
-      const data: { files: CodeFile[]; botMessages: string } = await res.json();
+        const data: { files: CodeFile[]; botMessages: string } =
+          await res.json();
 
-      setConfig(data);
-
-      setChatSession(prev => ({
-        turns: [
-          ...(prev?.turns ?? []),
-          {
-            user: [prompt],
-            bot: {
-              messages: data.botMessages,
-              code: data.files,
+        console.log("data :->", data);
+        setConfig({ files: data.files });
+        
+        setChatSession((prev) => ({
+          turns: [
+            ...(prev?.turns ?? []),
+            {
+              user: [prompt],
+              bot: {
+                messages: data.botMessages,
+                code: data.files,
+              },
             },
-          },
-        ],
-      }));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  generateCode();
-}, [prompt]);
-
+          ],
+        }));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    
+    generateCode();
+  }, [prompt]);
+  
+  console.log("config :->", config);
   return (
     <Suspense>
       <div className="h-screen flex flex-col">
         <PlaygroundNavbar />
+        {/* <p className="text-white">{JSON.stringify(config)}</p> */}
         <PlaygroundPanels
           leftPanel={
             <div className="pl-2 pb-2">
-              <Chat chatSession={chatSession ?? { turns: [] }} setPrompt={setPrompt} />
+              <Chat
+                chatSession={chatSession ?? { turns: [] }}
+                setPrompt={setPrompt}
+              />
             </div>
           }
           rightPanel={

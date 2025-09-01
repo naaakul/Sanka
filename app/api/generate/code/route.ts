@@ -40,8 +40,13 @@ export async function POST(req: NextRequest) {
     }
 
     const config = JSON.parse(match[0]);
+
+    if (!Array.isArray(config.files)) {
+      throw new Error("Invalid response: files is not an array");
+    }
+
     return NextResponse.json({
-      files: config,
+      files: config.files,
       botMessages: "here is your code",
     });
   } catch (err) {

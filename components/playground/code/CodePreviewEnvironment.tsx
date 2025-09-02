@@ -6,6 +6,8 @@ import PreviewPane from "./PreviewPane";
 import { CodeInterface } from "./CodeInterface";
 import { motion } from "framer-motion";
 import { CodeConfig } from "@/lib/types/codeChat.types";
+import JSZip from "jszip";
+import { fileSave } from "browser-fs-access";
 
 const categories = {
   ide: { label: "Code" },
@@ -16,7 +18,20 @@ interface NextIDEInterfaceProps {
   config: CodeConfig;
 }
 
-const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({config}) => {
+const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ config }) => {
+  async function handleDownload() {
+    const zip = new JSZip();
+
+    config.files.forEach((file) => {
+      zip.file(file.path, file.content);
+    });
+
+    const blob = await zip.generateAsync({ type: "blob" });
+    fileSave(blob, {
+      fileName: "code.zip",
+    });
+  }
+
   const [viewMode, setViewMode] = useState<"ide" | "preview">("ide");
 
   return (
@@ -52,16 +67,19 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({config}) => {
             </div>
           ))}
         </div>
-        <div>
+        <button
+          onClick={handleDownload}
+          className="p-2 hover:bg-neutral-800 rounded"
+        >
           <DownloadIcon className="size-5" />
-        </div>
+        </button>
       </div>
 
       <div className="flex-1 overflow-hidden">
         {viewMode === "ide" ? (
           <CodeInterface {...config} />
         ) : (
-          <PreviewPane {...config}/>
+          <PreviewPane {...config} />
         )}
       </div>
     </div>

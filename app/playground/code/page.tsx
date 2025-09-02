@@ -186,7 +186,7 @@ const Page = () => {
     generateCode();
   }, [prompt]);
 
-  console.log("config :->", config);
+  // console.log("config :->", config);
   return (
     // <Suspense>
     <div className="h-screen flex flex-col">

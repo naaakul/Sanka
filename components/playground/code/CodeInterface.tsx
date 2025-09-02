@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import FileTree from "./FileTree";
 import { EditorBreadcrumb } from "./EditorTabs";
 import { MonacoEditor } from "./MonacoEditor";
@@ -103,12 +103,65 @@ export const CodeInterface = (config: CodeConfig) => {
         setCurrentFile(newFile);
       }
     }
-  }, [config, openFiles.length, openFileInEditor, setOpenFiles, setCurrentFile]);
+  }, [
+    config,
+    openFiles.length,
+    openFileInEditor,
+    setOpenFiles,
+    setCurrentFile,
+  ]);
+
+  const [leftWidth, setLeftWidth] = useState(30); 
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDown = useCallback(() => {
+    setIsDragging(true);
+  }, []);
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging || !containerRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const newLeftWidth = ((e.clientX - rect.left) / rect.width) * 100;
+
+      // clamp between 15% and 40%
+      const clamped = Math.min(Math.max(newLeftWidth, 15), 40);
+      setLeftWidth(clamped);
+    },
+    [isDragging]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+    }
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   return (
-    <div className="h-screen bg-neutral-950 text-white flex flex-col">
-      <div className="flex flex-1 overflow-hidden">
-        <div className="w-[260px] border-r border-neutral-800 bg-neutral-900 overflow-y-auto">
+    <div
+      ref={containerRef}
+      className="h-screen bg-neutral-950 text-white flex flex-col"
+    >
+      <div className="flex flex-1 overflow-hidden h-full">
+        <div
+          className="border-r border-neutral-800 bg-neutral-900 overflow-y-auto h-full"
+          style={{ width: `${leftWidth}%` }}
+        >
           <FileTree
             config={config ?? { files: [] }}
             activeFile={currentFile?.path ?? null}
@@ -118,7 +171,17 @@ export const CodeInterface = (config: CodeConfig) => {
           />
         </div>
 
-        <div className="flex-1 flex flex-col">
+        {/* resizzzzzer */}
+        <div
+          onMouseDown={handleMouseDown}
+          className="relative w-[1px] cursor-e-resize flex-shrink-0 before:absolute before:inset-y-0 before:-left-2 before:-right-2 before:bg-transparent before:content-['']"
+        >
+        </div>
+
+        <div
+          style={{ width: `${100 - leftWidth}%` }}
+          className="flex-1 flex flex-col"
+        >
           {currentFile && (
             <EditorBreadcrumb
               path={currentFile.path}

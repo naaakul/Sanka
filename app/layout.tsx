@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   description:
     "Sañka is your all-in-one AI studio to generate React/Next.js components, build AI agents, and create animated videos instantly.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
+    icon: "/favicon.ico",       
+    shortcut: "/favicon.ico",    
+    apple: "/favicon.ico", 
   },
   openGraph: {
     title: "Sañka —  Next.js Code, AI Agents & Animated Videos",

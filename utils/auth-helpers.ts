@@ -1,30 +1,42 @@
-import { betterAuth }          from "better-auth";
-import { prismaAdapter }       from "better-auth/adapters/prisma";
-import { PrismaClient }        from "@prisma/client";
-import crypto                  from "crypto";
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { PrismaClient } from "@prisma/client";
+import crypto from "crypto";
 
-const prisma = new PrismaClient();
+type GlobalWithPrisma = typeof globalThis & { __prisma?: PrismaClient };
+const g = globalThis as GlobalWithPrisma;
 
-prisma.$use(async (params, next) => {
-  if (params.action === "create" && (params.model === "Session" || params.model === "Account")) {
-    const data: any = params.args.data;
+const base = g.__prisma ?? new PrismaClient();
+if (process.env.NODE_ENV !== "production") g.__prisma = base;
 
-    if (params.model === "Session") {
-      data.sessionToken ||= crypto.randomUUID();
-      data.expires      ||= new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
-      data.createdAt    ||= new Date();
-      data.updatedAt    ||= new Date();
-    }
+export const prisma = base.$extends({
+  query: {
+    $allModels: {
+      async $allOperations(params: any) {
+        const { operation, model, args, query } = params;
 
-    if (params.model === "Account") {
-      data.provider           ||= data.providerId;
-      data.providerAccountId  ||= data.accountId;
-      data.createdAt          ||= new Date();
-      data.updatedAt          ||= new Date();
-    }
-  }
+        if (operation === "create" && (model === "Session" || model === "Account")) {
+          const data: any = args?.data ?? {};
 
-  return next(params);
+          if (model === "Session") {
+            data.sessionToken ||= crypto.randomUUID();
+            data.expires      ||= new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+            data.createdAt    ||= new Date();
+            data.updatedAt    ||= new Date();
+          }
+
+          if (model === "Account") {
+            data.provider           ||= data.providerId;
+            data.providerAccountId  ||= data.accountId;
+            data.createdAt          ||= new Date();
+            data.updatedAt          ||= new Date();
+          }
+        }
+
+        return query(args);
+      },
+    },
+  },
 });
 
 export const auth = betterAuth({
@@ -44,5 +56,4 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
-  
 });

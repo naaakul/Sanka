@@ -9,12 +9,13 @@ import { useEffect, useRef, useState } from "react";
 // import { Suspense } from "react";
 import { ChatSession, CodeConfig, CodeFile } from "@/lib/types/codeChat.types";
 import Sidebar from "@/components/playground/Sidebar";
-import { getChatSessions } from "@/app/actions/getChatSessions";
-import { createAuthClient } from "better-auth/react";
-import { prisma } from "@/lib/prisma";
+// import { getChatSessions } from "@/app/actions/getChatSessions";
+// import { createAuthClient } from "better-auth/react";
+import { useSession } from "@/lib/auth/auth-client";
+// import { prisma } from "@/lib/prisma";
 
 
-export const { useSession } = createAuthClient();
+
 
 
 // const co = {
@@ -133,19 +134,29 @@ export const { useSession } = createAuthClient();
 //   ],
 // };
 
-const Page = async () => {
-  const { data: session } = useSession();
+const Page = () => {
+  // const { data: session } = useSession();
+  const [sessions, setSessions] = useState([]);
   const [chatSession, setChatSession] = useState<ChatSession>();
   const [config, setConfig] = useState<CodeConfig | null>(null);
   const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState<string | null>(searchParams.get("q"));
   const [open, setOpen] = useState(false);
   const closeTimer = useRef<number | null>(null);
-  const account = await prisma.account.findFirst({
-    where: { userId: session?.user.id },
-  });
-  const accountId = account?.id ?? null;
-  const sessions = await getChatSessions(accountId ?? "");
+  // const account = await prisma.account.findFirst({
+  //   where: { userId: session?.user.id },
+  // });
+  // const accountId = account?.id ?? null;
+  // const sessions = await getChatSessions(accountId ?? "");
+  useEffect(() => {
+    const fetchSessions = async () => {
+      const res = await fetch("/api/chat-sessions");
+      if (!res.ok) return;
+      const data = await res.json();
+      setSessions(data.sessions);
+    };
+    fetchSessions();
+  }, []);
 
   function handleEnter() {
     if (closeTimer.current) {

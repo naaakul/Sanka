@@ -12,7 +12,7 @@ interface SessionItem{
     title: string | null;
     id: string;
     createdAt: Date;
-}[]
+}
 
 interface SidebarProps {
   handleEnter: () => void;

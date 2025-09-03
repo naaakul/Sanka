@@ -3,11 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { createAuthClient } from "better-auth/react";
+import { useSession, signOut } from "@/lib/auth/auth-client";
 import { Loader2, Menu, X } from "lucide-react";
 // import { ThemeToggle } from "../ui/theme-toggle";
 
-export const { useSession, signIn, signOut } = createAuthClient();
 
 const navTags = [
   { name: "SANKA", href: "/" },

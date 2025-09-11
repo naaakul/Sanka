@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis";
 import { auth } from "@/utils/auth-helpers";
 

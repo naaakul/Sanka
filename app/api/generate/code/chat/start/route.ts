@@ -1,10 +1,19 @@
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/utils/auth-helpers"; 
 import { prisma } from "@/lib/prisma";
-import { redis } from "@/lib/redis";
-import { auth } from "@/utils/auth-helpers";
+import { redis } from "@/lib/redis"; 
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { prompt } = await req.json();
+    if (!prompt || typeof prompt !== "string") {
+      return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+    }
 
     const res = await fetch("/api/generate/code/chat/title", {
       method: "POST",
@@ -13,39 +22,29 @@ export async function POST(req: Request) {
     });
     const data = await res.json();
 
-    const session = await auth.api.getSession({ headers: req.headers });
+    const initialData = {
+      turns: [
+        {
+          user: [prompt],
+          bot: { messages: "", code: [] },
+        },
+      ],
+    };
 
-    if (!session?.user?.id) {
-      return Response.json(
-        { ok: false, reason: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const chatSession = await prisma.chatSession.create({
+    const chat = await prisma.chatSession.create({
       data: {
         userId: session.user.id,
         title: data.title || "Untitled",
-        data: "code",
+        data: initialData,
       },
     });
 
-    await redis.set(
-      `chat:${chatSession.id}`,
-      JSON.stringify({
-        messages: [],
-        version: 1,
-        updatedAt: Date.now(),
-      }),
-      { ex: 60 * 60 }
-    );
+    const redisKey = `chat:${chat.id}`;
+    await redis.set(redisKey, JSON.stringify(initialData), { ex: 60 * 60 });
 
-    return Response.json({ ok: true, id: chatSession.id });
-  } catch (err: any) {
-    console.error("Error starting chat:", err);
-    return Response.json(
-      { ok: false, reason: "Server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ chatId: chat.id });
+  } catch (err) {
+    console.error("Error creating chat session:", err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -29,15 +29,35 @@ const Builder = () => {
   const [loading, setLoading] = useState(false);
   const authModalRef = useRef<AuthModalRef>(null);
 
+  // const handleSubmit = () => {
+  //   if (!session) {
+  //     modalRef.current?.open();
+  //     return;
+  //   }
+  //   if (!input.trim()) return;
+  //   setLoading(true);
+  //   router.push(`/playground/${activeCategory}?q=${encodeURIComponent(input)}`);
+  // };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!session) {
       modalRef.current?.open();
       return;
     }
+
     if (!input.trim()) return;
+    
     setLoading(true);
-    router.push(`/playground/${activeCategory}?q=${encodeURIComponent(input)}`);
+
+    const res = await fetch("/api/generate/code/chat/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: input.trim() }),
+    });
+
+    const data = await res.json();
+
+    router.push(`/playground/${activeCategory}?q=${encodeURIComponent(data.chatId)}`);
   };
 
   const pathname = usePathname();
@@ -51,7 +71,7 @@ const Builder = () => {
     setActiveCategory(key);
 
     if (clickSound) {
-      clickSound.currentTime = 0; 
+      clickSound.currentTime = 0;
       clickSound.play();
     }
   };

@@ -134,6 +134,7 @@ const Page = () => {
   const [config, setConfig] = useState<CodeConfig | null>(null);
   const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState<string | null>(searchParams.get("q"));
+  const chatId = searchParams.get("q");
   const [open, setOpen] = useState(false);
   const closeTimer = useRef<number | null>(null);
 
@@ -214,7 +215,8 @@ const Page = () => {
         leftPanel={
           <div className="pl-2 pb-2 h-full">
             <Chat
-              chatSession={chatSession ?? { turns: [] }}
+              // chatSession={chatSession ?? { turns: [] }}
+              chatId={chatId}
               setPrompt={setPrompt}
               useSession={useSession}
             />

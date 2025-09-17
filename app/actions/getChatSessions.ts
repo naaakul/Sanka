@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 
-export async function getChatSessions(accountId: string) {
-  if (!accountId) return [];
+export async function getChatSessions(userId: string) {
+  if (!userId) return [];
 
   return prisma.chatSession.findMany({
-    where: { accountId },
+    where: { userId }, 
     orderBy: { createdAt: "desc" },
     select: { id: true, title: true, createdAt: true },
   });

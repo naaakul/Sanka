@@ -61,7 +61,6 @@ export default function Chat({ chatId, useSession, chat, setChat }: ChatProps) {
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-
   // fatch dataaa for the chat
   useEffect(() => {
     if (!chatId) return;
@@ -93,7 +92,7 @@ export default function Chat({ chatId, useSession, chat, setChat }: ChatProps) {
     };
   }, [chatId]);
 
-  // generate code and send data to rediss
+  // generate code and send data to redis
   const generatingRef = useRef(false);
 
   async function generateForLastTurn(promptText: string) {
@@ -113,16 +112,15 @@ export default function Chat({ chatId, useSession, chat, setChat }: ChatProps) {
         console.error("generate API error:", text);
         return;
       }
-      
-      const body = await res.json();
 
-      console.log("this is the code - ", body.bot.code);
+      const body = await res.json();
 
       if (body.bot) {
         setChat((prev) => {
           if (!prev) return prev;
           const next = { ...prev, turns: [...prev.turns] };
           const idx = next.turns.length - 1;
+
           next.turns[idx] = {
             ...next.turns[idx],
             bot: {
@@ -130,18 +128,11 @@ export default function Chat({ chatId, useSession, chat, setChat }: ChatProps) {
               code: body.bot.code ?? next.turns[idx].bot.code ?? [],
             },
           };
+
+          persistChat(next);
+
           return next;
         });
-
-        await fetch("/api/generate/code/chat/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sessionId: chatId,
-            role: "bot",
-            content: body.bot.messages,
-          }),
-        }).catch((err) => console.error("persist bot message failed:", err));
       }
     } catch (err) {
       console.error("generateForLastTurn failed:", err);
@@ -165,7 +156,7 @@ export default function Chat({ chatId, useSession, chat, setChat }: ChatProps) {
     }
   }, [chat, chatId]);
 
-  // sending prompts to radis
+  // sending prompts to redis
   async function handleSend() {
     if (!input.trim() || !chatId) return;
 
@@ -174,32 +165,41 @@ export default function Chat({ chatId, useSession, chat, setChat }: ChatProps) {
 
     setChat((prev) => {
       if (!prev) return prev;
-      return {
+      const next = {
         ...prev,
         turns: [
           ...prev.turns,
           { user: [promptText], bot: { messages: "", code: [] } },
         ],
       };
-    });
 
+      persistChat(next);
+
+      return next;
+    });
+  }
+
+  // helper redis
+  async function persistChat(updatedChat: ChatSession) {
     try {
       const res = await fetch(`/api/generate/code/chat/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatId, prompt: promptText }),
+        body: JSON.stringify({
+          sessionId: chatId,
+          chat: updatedChat,
+        }),
       });
 
-      if (!res.ok) throw new Error(await res.text());
-      const updated = await res.json();
-
-      setChat(updated);
+      if (!res.ok) {
+        console.error("persistChat failed:", await res.text());
+      }
     } catch (err) {
-      console.error("handleSend failed:", err);
+      console.error("persistChat error:", err);
     }
   }
 
-  // scrolling chat down 
+  // scrolling chat down
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -209,7 +209,6 @@ export default function Chat({ chatId, useSession, chat, setChat }: ChatProps) {
     );
     return () => clearTimeout(t);
   }, [chat]);
-
 
   return (
     <div className="h-full bg-[#0a0a0a] text-white flex flex-col rounded-lg border border-neutral-800 overflow-hidden">

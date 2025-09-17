@@ -8,8 +8,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface SessionItem {
-  chatTitle: string;
-  chatId: string;
+  title: string;
+  id: string;
 }
 
 interface SidebarProps {
@@ -29,7 +29,7 @@ export default function Sidebar({
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const res = await fetch("/api/sessions");
+        const res = await fetch("/api/generate/code/chat");
         if (!res.ok) throw new Error("Failed to fetch sessions");
         const data: SessionItem[] = await res.json();
         setSessions(data);
@@ -40,6 +40,8 @@ export default function Sidebar({
 
     fetchSessions();
   }, []);
+
+  console.log("sessionaaa - ",sessions)
 
   return (
     <div className="fixed inset-y-0 left-0 z-50 pointer-events-none">
@@ -85,16 +87,18 @@ export default function Sidebar({
                   </li>
                 </ul>
 
-                <ul className="flex flex-col gap-1 mt-4">
+                <hr className="my-2 bg-neutral-800 w-full"/>
+
+                <ul className="flex flex-col gap-1">
                   {sessions.map((s) => (
-                    <li key={s.chatId}>
+                    <li key={s.id}>
                       <button
                         onClick={() =>
-                          router.push(`/playground/code?q=${s.chatId}`)
+                          router.push(`/playground/code?q=${s.id}`)
                         }
-                        className="w-full text-left flex gap-2 items-center rounded-md px-3 py-2 text-sm cursor-pointer hover:bg-neutral-800 text-white"
+                        className="w-full text-left flex gap-2 items-center rounded-md px-3 py-2 text-xs cursor-pointer hover:bg-neutral-800 text-white"
                       >
-                        {s.chatTitle}
+                        {s.title}
                       </button>
                     </li>
                   ))}

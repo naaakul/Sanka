@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       throw new Error("Invalid response: files is not an array");
     }
 
-    console.log("code BE - ", config.files)
+    // console.log("code BE - ", config.files)
 
     return NextResponse.json({
       bot: {

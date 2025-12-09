@@ -1,22 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const SECRET = process.env.NAK_SECRET;
-
 export async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const pathname = req.nextUrl.pathname;
+  const token = req.cookies.get("better-auth.session_token")?.value;
 
-  const sessionToken = req.cookies.get("better-auth.session_token")?.value;
-
-  if (pathname === "/playground/code" && !sessionToken) {
+  // Auth route
+  if (pathname === "/playground/code" && !token) {
     return NextResponse.redirect(new URL("/auth/sign-in", req.url));
   }
 
-  if (!SECRET || SECRET !== "WIFE") {
-    if (
-      pathname !== "/notify" &&
-      !pathname.startsWith("/api/waitlist")
-    ) {
+  // Secret check
+  const secret = process.env.NAK_SECRET;
+
+  if (secret !== "WIFE") {
+    if (!pathname.startsWith("/api/waitlist") && pathname !== "/notify") {
       return NextResponse.redirect(new URL("/notify", req.url));
     }
   }

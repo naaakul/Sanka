@@ -8,8 +8,8 @@ import AuthModal, { AuthModalRef } from "./auth-modal";
 import { createAuthClient } from "better-auth/react";
 
 const categories = {
-  agent: { label: "AI Agent" },
-  code: { label: "Code" },
+  agent: { label: "AI Agent", status: "Coming soon" },
+  code: { label: "Code", status: undefined },
   // video: { label: "Video" },
 };
 
@@ -46,7 +46,7 @@ const Builder = () => {
     }
 
     if (!input.trim()) return;
-    
+
     setLoading(true);
 
     const res = await fetch("/api/generate/code/chat/start", {
@@ -57,7 +57,9 @@ const Builder = () => {
 
     const data = await res.json();
 
-    router.push(`/playground/${activeCategory}?q=${encodeURIComponent(data.chatId)}`);
+    router.push(
+      `/playground/${activeCategory}?q=${encodeURIComponent(data.chatId)}`
+    );
   };
 
   const pathname = usePathname();
@@ -127,36 +129,60 @@ const Builder = () => {
 
       {/* Category Selector */}
       <div className="flex items-center justify-between p-1.5 sm:p-2 rounded-full relative bg-black/40 backdrop-blur-xl w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
-        {Object.entries(categories).map(([key, { label }]) => (
-          <div
-            key={key}
-            onClick={() => handleCategoryClick(key as keyof typeof categories)}
-            className="relative cursor-pointer w-full group text-center py-1.5 sm:py-2 overflow-visible transition-all duration-300 ease-[cubic-bezier(0.175, 0.885, 0.32, 1.275)] px-2 sm:px-4"
-          >
-            {activeCategory === key && (
-              <motion.div
-                layoutId="activeCategory"
-                className="absolute inset-0 bg-[#0A0A0A] rounded-full"
-                transition={{
-                  type: "spring",
-                  stiffness: 120,
-                  damping: 10,
-                  mass: 0.2,
-                  ease: [0, 1, 0.35, 0],
-                }}
-              />
-            )}
-            <span
-              className={`relative flex whitespace-nowrap text-white text-xs sm:text-sm items-center gap-2 justify-center ${
-                activeCategory === key
-                  ? "text-primary-foreground"
-                  : "text-foreground"
-              }`}
+        {Object.entries(categories).map(([key, { label, status }]) => {
+          const isDisabled = status === "Coming soon";
+
+          return (
+            <div
+              key={key}
+              onClick={() =>
+                !isDisabled &&
+                handleCategoryClick(key as keyof typeof categories)
+              }
+              className={`relative w-full group text-center py-1.5 sm:py-2 overflow-visible transition-all duration-300 ease-[cubic-bezier(0.175, 0.885, 0.32, 1.275)] px-2 sm:px-4 
+          ${isDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
             >
-              {label}
-            </span>
-          </div>
-        ))}
+              {/* Highlight selected */}
+              {!isDisabled && activeCategory === key && (
+                <motion.div
+                  layoutId="activeCategory"
+                  className="absolute inset-0 bg-[#0A0A0A] rounded-full"
+                  transition={{
+                    type: "spring",
+                    stiffness: 120,
+                    damping: 10,
+                    mass: 0.2,
+                    ease: [0, 1, 0.35, 0],
+                  }}
+                />
+              )}
+
+              {/* Main label */}
+              <span
+                className={`relative flex whitespace-nowrap text-white text-xs sm:text-sm items-center gap-2 justify-center ${
+                  activeCategory === key
+                    ? "text-primary-foreground"
+                    : "text-foreground"
+                }`}
+              >
+                {label}
+              </span>
+
+              {/* COMING SOON badge */}
+              {/* {isDisabled && (
+                <span className="absolute bottom-1 -rotate-12 px-2 right-10 bg-black rounded-full text-[8px] sm:text-[7px] text-white/40 font-medium whitespace-nowrap">
+                  <p>{status}</p>
+                </span>
+              )} */}
+
+              {isDisabled && (
+                <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] sm:text-[10px] text-white/40 font-medium whitespace-nowrap">
+                  {status}
+                </span>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

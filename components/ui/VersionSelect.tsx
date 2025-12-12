@@ -21,7 +21,7 @@ export default function VersionSelect({
 }: VersionSelectProps) {
   if (versionCount === 0) {
     return (
-      <div className="text-sm text-muted-foreground">
+      <div className="text-sm text-muted-foreground flex items-center">
         No code versions available
       </div>
     );

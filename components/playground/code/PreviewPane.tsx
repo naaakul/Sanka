@@ -1,20 +1,37 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { CodeConfig } from "@/lib/types/codeChat.types";
 
 interface PreviewPaneProps {
   version: string | null;
   config: CodeConfig;
+  previewCache: Record<string, string>;
+  setPreviewCache: (
+    cb: (prev: Record<string, string>) => Record<string, string>
+  ) => void;
 }
 
-const PreviewPane: React.FC<PreviewPaneProps> = ({ version, config }) => {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+const PreviewPane: React.FC<PreviewPaneProps> = ({
+  version,
+  config,
+  previewCache,
+  setPreviewCache,
+}) => {
   const [loading, setLoading] = useState(false);
 
+  // cached URL if exists
+  const previewUrl = version ? previewCache[version] : null;
+
   useEffect(() => {
+    if (!version) return;
+
+    // already has URL → don't re-generate sandbox
+    if (previewCache[version]) return;
+
     const runSandbox = async () => {
       setLoading(true);
+
       try {
         const res = await fetch("/api/generate/code/sandbox", {
           method: "POST",
@@ -23,15 +40,17 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ version, config }) => {
         });
 
         const data = await res.json();
+
         if (data.success) {
-          setPreviewUrl(data.previewUrl);
+          setPreviewCache((prev) => ({
+            ...prev,
+            [version]: data.previewUrl,
+          }));
         } else {
           console.error("Sandbox error:", data.error);
-          setPreviewUrl(null);
         }
       } catch (err) {
         console.error("Request failed:", err);
-        setPreviewUrl(null);
       } finally {
         setLoading(false);
       }
@@ -40,22 +59,14 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ version, config }) => {
     if (config?.files?.length > 0) {
       runSandbox();
     }
-  }, [config]);
+  }, [version, config]);
 
   return (
-    <div className="h-full bg-gray-900 flex flex-col">
-      {/* header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
-        <span className="text-sm text-gray-300">
-          Preview {version ? `— ${version}` : ""}
-        </span>
-      </div>
-
-      {/* content */}
+    <div className="h-full bg-neutral-900 flex flex-col">
       <div className="flex-1 relative">
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-            Starting sandbox...
+          <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
+            Generating preview...
           </div>
         )}
 
@@ -63,7 +74,6 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ version, config }) => {
           <iframe
             src={previewUrl}
             className="w-full h-full border-0"
-            title={`Preview ${version || ""}`}
             sandbox="allow-scripts allow-same-origin"
           />
         )}
@@ -78,4 +88,4 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ version, config }) => {
   );
 };
 
-export default PreviewPane;
+export default memo(PreviewPane);

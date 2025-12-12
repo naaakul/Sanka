@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     const sandbox = await Sandbox.create("mk6klmser1ctnxf0d9ed", {
       apiKey: process.env.E2B_API_KEY!,
-      timeoutMs: 5 * 60 * 1000,
+      timeoutMs: 10 * 60 * 1000,
     });
 
     await Promise.all(

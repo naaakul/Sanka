@@ -25,9 +25,10 @@ interface Version {
 }
 
 const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
-  // filter versions from chatttt
+  // parse versions
   const versions: Version[] = useMemo(() => {
     if (!chat) return [];
+
     return chat.turns
       .map((turn, idx) => ({
         version: `v${idx + 1}`,
@@ -39,6 +40,7 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
   const [manualSelect, setManualSelect] = useState(false);
 
+  // handle auto-selection of latest version
   useEffect(() => {
     if (versions.length === 0) return;
 
@@ -66,7 +68,7 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
     return { files: currentCode };
   }, [currentCode]);
 
-  // download zippp
+  // download zip
   async function handleDownload() {
     if (!currentCode || currentCode.length === 0) return;
 
@@ -82,6 +84,9 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
   }
 
   const [viewMode, setViewMode] = useState<"ide" | "preview">("ide");
+
+  // NEW: Cache for preview URLs (version -> previewUrl)
+  const [previewCache, setPreviewCache] = useState<Record<string, string>>({});
 
   return (
     <div className="h-full bg-[#1e1e1e] text-white flex flex-col rounded-lg border border-neutral-800 overflow-hidden">
@@ -136,13 +141,38 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      {/* <div className="flex-1 overflow-hidden">
         {viewMode === "ide" ? (
           <CodeInterface version={selectedVersion} config={currentCodeConfig} />
         ) : (
-          <PreviewPane version={selectedVersion} config={currentCodeConfig} />
+          <PreviewPane
+            version={selectedVersion}
+            config={currentCodeConfig}
+            previewCache={previewCache}
+            setPreviewCache={setPreviewCache}
+          />
         )}
-      </div>
+      </div> */}
+
+      <div className="flex-1 overflow-hidden relative">
+  <div
+    className={viewMode === "ide" ? "block" : "hidden"}
+  >
+    <CodeInterface version={selectedVersion} config={currentCodeConfig} />
+  </div>
+
+  <div
+    className={viewMode === "preview" ? "block h-full" : "hidden"}
+  >
+    <PreviewPane
+      version={selectedVersion}
+      config={currentCodeConfig}
+      previewCache={previewCache}
+      setPreviewCache={setPreviewCache}
+    />
+  </div>
+</div>
+
     </div>
   );
 };

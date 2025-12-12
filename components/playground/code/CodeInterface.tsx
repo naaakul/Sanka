@@ -14,8 +14,8 @@ interface OpenFile {
 }
 
 interface CodeInterfaceProps {
-  version: string | null;     
-  config: CodeConfig | null; 
+  version: string | null;
+  config: CodeConfig | null;
 }
 
 export const CodeInterface = ({ version, config }: CodeInterfaceProps) => {
@@ -157,58 +157,56 @@ export const CodeInterface = ({ version, config }: CodeInterfaceProps) => {
       ref={containerRef}
       className="h-screen bg-neutral-950 text-white flex flex-col"
     >
-      <div className="flex flex-1 overflow-hidden h-full">
-        <div
-          className="border-r border-neutral-800 bg-neutral-900 overflow-y-auto h-full"
-          style={{ width: `${leftWidth}%` }}
-        >
-          <FileTree
-            config={config ?? { files: [] }}
-            activeFile={currentFile?.path ?? null}
-            onFileOpen={(p) => {
-              openFileInEditor(p);
-            }}
-          />
-        </div>
-
-        <div
-          onMouseDown={handleMouseDown}
-          className="relative w-[1px] cursor-e-resize flex-shrink-0 before:absolute before:inset-y-0 before:-left-2 before:-right-2 before:bg-transparent before:content-['']"
-        />
-
-        <div
-          style={{ width: `${100 - leftWidth}%` }}
-          className="flex-1 flex flex-col"
-        >
-          {currentFile && (
-            <EditorBreadcrumb
-              path={currentFile.path}
-              isDirty={currentFile.isDirty}
-              onClose={() => handleClose(currentFile.path)}
+      {currentFile ? (
+        <div className="flex flex-1 overflow-hidden h-full">
+          <div
+            className="border-r border-neutral-800 bg-neutral-900 overflow-y-auto h-full"
+            style={{ width: `${leftWidth}%` }}
+          >
+            <FileTree
+              config={config ?? { files: [] }}
+              activeFile={currentFile?.path ?? null}
+              onFileOpen={(p) => {
+                openFileInEditor(p);
+              }}
             />
-          )}
+          </div>
 
-          <div className="flex-1">
-            {currentFile ? (
-              <MonacoEditor
-                config={config ?? { files: [] }}
-                activeFile={currentFile.path}
-                onFileOpen={(p) => openFileInEditor(p)}
-                onContentChange={(path, content) =>
-                  handleContentChange(path, content)
-                }
+          <div
+            onMouseDown={handleMouseDown}
+            className="relative w-[1px] cursor-e-resize flex-shrink-0 before:absolute before:inset-y-0 before:-left-2 before:-right-2 before:bg-transparent before:content-['']"
+          />
+
+          <div
+            style={{ width: `${100 - leftWidth}%` }}
+            className="flex-1 flex flex-col"
+          >
+            <>
+              <EditorBreadcrumb
+                path={currentFile.path}
+                isDirty={currentFile.isDirty}
+                onClose={() => handleClose(currentFile.path)}
               />
-            ) : (
-              <div className="h-full bg-neutral-950 flex items-center justify-center">
-                <div className="text-center text-neutral-700">
-                  <h2 className="text-2xl mb-4">Welcome to SANKA</h2>
-                  <p>Select a file from the explorer to start editing</p>
-                </div>
+              <div className="flex-1">
+                <MonacoEditor
+                  config={config ?? { files: [] }}
+                  activeFile={currentFile.path}
+                  onFileOpen={(p) => openFileInEditor(p)}
+                  onContentChange={(path, content) =>
+                    handleContentChange(path, content)
+                  }
+                />
               </div>
-            )}
+            </>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="h-full bg-neutral-950 flex items-center justify-center">
+          <div className="text-center text-neutral-700">
+            <p>Nothing to show</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -194,11 +194,7 @@ export default function FileTree({
               <TreeItem key={id} item={item}>
                 <TreeItemLabel
                   // visually indicate active file
-                  className={`before:bg-neutral-900 relative before:absolute before:inset-x-0 before:-inset-y-0.5 before:-z-10 ${
-                    isActive
-                      ? "bg-neutral-800 text-white"
-                      : "text-muted-foreground"
-                  }`}
+                  className={`before:bg-neutral-900 relative before:absolute before:inset-x-0 before:-inset-y-0.5 before:-z-10 `}
                   // Prevent renaming/select default behaviours
                   onClick={(e: React.MouseEvent) => {
                     // Clicking label should open files only (not folders)

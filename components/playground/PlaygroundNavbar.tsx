@@ -50,29 +50,7 @@ const PlaygroundNavbar = ({handleEnter, handleLeave}: SidebarProps) => {
         >
           /
         </span>
-
-        <NavigationMenu viewport={false}>
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Smart terminal CLI</NavigationMenuTrigger>
-              <NavigationMenuContent className="z-20">
-                <ul className="grid w-[200px] gap-4">
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Components</Link>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Documentation</Link>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Blocks</Link>
-                    </NavigationMenuLink>
-                  </li>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
+              <p>Smart terminal CLI</p>
       </div>
 
       {isPending ? (

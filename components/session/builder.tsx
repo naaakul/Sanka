@@ -10,7 +10,7 @@ import { createAuthClient } from "better-auth/react";
 const categories = {
   agent: { label: "AI Agent" },
   code: { label: "Code" },
-  video: { label: "Video" },
+  // video: { label: "Video" },
 };
 
 const clickSound =

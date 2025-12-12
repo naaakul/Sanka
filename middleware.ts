@@ -5,12 +5,10 @@ export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
   const token = req.cookies.get("better-auth.session_token")?.value;
 
-  // Auth route
   if (pathname === "/playground/code" && !token) {
     return NextResponse.redirect(new URL("/auth/sign-in", req.url));
   }
 
-  // Secret check
   const secret = process.env.NAK_SECRET;
 
   if (secret !== "WIFE") {
